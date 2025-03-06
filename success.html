@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Animation</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            flex-direction: column;
+        }
+        .message {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .button-container {
+            margin-top: 20px;
+            display: none;
+        }
+        button {
+            background: linear-gradient(45deg, #28a745, #218838);
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #218838, #1e7e34);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="message" id="message">Processing...</div>
+    <div class="button-container" id="buttonContainer">
+        <button onclick="continueShopping()">Continue | Stay Healthy</button>
+    </div>
+
+    <script>
+        setTimeout(() => {
+            document.getElementById("message").textContent = "Thank you for your purchase!";
+            document.getElementById("buttonContainer").style.display = "block";
+        }, 2000);
+
+        function continueShopping() {
+            alert("Redirecting to homepage...");
+            window.location.href = "hello.html"; // Change this to your desired page
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 class="text-2xl font-bold mb-6 text-center">Checkout</h2>
+        
+        <form id="checkoutForm">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Full Name</label>
+                <input type="text" id="fullName" required class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                <input type="email" id="email" required class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Age</label>
+                <input type="number" id="age" required min="1" class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-semibold mb-2">Payment Method</label>
+                <select id="paymentMethod" required class="w-full px-4 py-2 border rounded-lg focus:ring focus:ring-blue-300">
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="UPI">UPI</option>
+                </select>
+            </div>
+
+            <!-- Membership Type and Price -->
+            <div class="mb-6 text-center">
+                <span class="text-lg font-semibold text-gray-700">Membership Type: </span>
+                <span id="membershipType" class="text-lg font-bold"></span>
+            </div>
+
+            <div class="mb-6 text-center">
+                <span class="text-xl font-bold">Total: $<span id="totalPrice"></span></span>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">
+                Place Order
+            </button>
+        </form>
+        
+        <div id="errorMessage" class="text-red-500 text-center mt-4 hidden"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            const price = params.get('price');
+
+            let membershipType = "Unknown";
+            let totalPrice = "0";
+
+            if (type === "year") {
+                membershipType = "YEAR CARD";
+                totalPrice = "599";
+            } else if (type === "monthly") {
+                membershipType = "MONTHLY CARD";
+                totalPrice = "100";
+            }
+
+            document.getElementById("membershipType").innerText = membershipType;
+            document.getElementById("totalPrice").innerText = totalPrice;
+        });
+
+        document.getElementById("checkoutForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById("fullName").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const age = document.getElementById("age").value.trim();
+            const paymentMethod = document.getElementById("paymentMethod").value;
+
+            if (!fullName || !email || !age || !paymentMethod) {
+                showError("All fields are required!");
+                return;
+            }
+
+            const membershipType = document.getElementById("membershipType").innerText;
+            const totalPrice = document.getElementById("totalPrice").innerText;
+
+            const data = { fullName, email, age, paymentMethod, membershipType, totalPrice };
+
+            try {
+                const response = await fetch("/api/checkout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    window.location.href = result.redirectUrl;
+                } else {
+                    showError(result.message);
+                }
+            } catch (err) {
+                showError("Error processing your request. Please try again.");
+                console.error("Checkout error:", err);
+            }
+        });
+
+        function showError(message) {
+            const errorDiv = document.getElementById("errorMessage");
+            errorDiv.innerText = message;
+            errorDiv.classList.remove("hidden");
+        }
+    </script>
+</body>
+</html>
